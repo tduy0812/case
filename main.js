@@ -1,4 +1,4 @@
-let myStore = new Store("Cua hang");
+let myStore = new Store("San Pham");
 
 function showHome() {
     document.getElementById("main").innerHTML = `
@@ -52,16 +52,33 @@ function add() {
     let color = document.getElementById("color").value;
     let price = document.getElementById("price").value;
     let imageInput = document.getElementById("image");
-    let image = imageInput.files.length > 0 ? URL.createObjectURL(imageInput.files[0]) : ""; // Lấy đường dẫn của ảnh
-    let newProduct = new Product(id, name, color, price, image);
+    // let image = imageInput.files.length > 0 ? URL.createObjectURL(imageInput.files[0]) : ""; // Lấy đường dẫn của ảnh
+    // let newProduct = new Product(id, name, color, price, image);
     if (name.trim() === '' || color.trim() === '' || price.trim() === '' || imageInput.files.length === 0) {
         // Hiển thị thông báo nếu người dùng chưa nhập đủ thông tin
         alert("Vui lòng nhập đầy đủ thông tin sản phẩm!");
         return; // Dừng việc thêm sản phẩm nếu thông tin không đầy đủ
     }
-    myStore.add(newProduct);
-    saveLocalStorage()
-    showHome();
+    // myStore.add(newProduct);
+    // saveLocalStorage()
+    // showHome();
+
+    // Chuyển đổi hình ảnh thành dữ liệu base64
+    let image = "";
+    if (imageInput.files.length > 0) {
+        let file = imageInput.files[0];
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            image = reader.result;
+            let newProduct = new Product(id, name, color, price, image);
+            myStore.add(newProduct);
+            saveLocalStorage();
+            showHome();
+        };
+    } else {
+        alert("Vui lòng chọn hình ảnh!");
+    }
 }
 
 function removeProduct(index) {
