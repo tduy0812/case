@@ -24,7 +24,7 @@ function showHome() {
             <td>${i + 1}</td>
             <td>${list[i].name}</td>
             <td>${list[i].color}</td>
-            <td>${list[i].price}</td>
+            <td>${list[i].price} vnđ</td>
             <td><img src="${list[i].image}" alt=""></td>
             <td><button onclick="showFormUpdate(${i})">Update</button></td>
         <td><button onclick="removeProduct(${i})">Delete</button></td>
@@ -39,7 +39,7 @@ function showFormAdd() {
     <input type="text" id="id" placeholder="Id" readonly>
     <input type="text" id="name" placeholder="Name">
     <input type="text" id="color" placeholder="Color">
-    <input type="text" id="price" placeholder="Price">
+    <input type="number" id="price" placeholder="Price">
     <input type="file" id="image" accept="image/*">
     <img id="imagePreview" src="" alt="Preview">
     <button onclick="add()">Add</button>
@@ -51,17 +51,24 @@ function add() {
     let name = document.getElementById("name").value;
     let color = document.getElementById("color").value;
     let price = document.getElementById("price").value;
-    let imageInput = document.getElementById("image");
-    // let image = imageInput.files.length > 0 ? URL.createObjectURL(imageInput.files[0]) : ""; // Lấy đường dẫn của ảnh
-    // let newProduct = new Product(id, name, color, price, image);
-    if (name.trim() === '' || color.trim() === '' || price.trim() === '' || imageInput.files.length === 0) {
-        // Hiển thị thông báo nếu người dùng chưa nhập đủ thông tin
+    // Kiểm tra đầy đủ thông tin
+    if (name.trim() === '' || color.trim() === '' || price.trim() === '') {
         alert("Vui lòng nhập đầy đủ thông tin sản phẩm!");
-        return; // Dừng việc thêm sản phẩm nếu thông tin không đầy đủ
+        return;
     }
-    // myStore.add(newProduct);
-    // saveLocalStorage()
-    // showHome();
+
+    // Kiểm tra giá trị price không âm
+    if (isNaN(price) || Number(price) < 0) {
+        alert("Giá sản phẩm phải là số không âm!");
+        return;
+    }
+
+    let imageInput = document.getElementById("image");
+
+    if (imageInput.files.length === 0) {
+        alert("Vui lòng chọn hình ảnh!");
+        return;
+    }
 
     // Chuyển đổi hình ảnh thành dữ liệu base64
     let image = "";
@@ -103,7 +110,7 @@ function showFormUpdate(index) {
     <input type="text" id="id" placeholder="Id" value="${oldProduct.id}" readonly>
     <input type="text" id="name" placeholder="Name" value="${oldProduct.name}">
     <input type="text" id="color" placeholder="Color" value="${oldProduct.color}">
-    <input type="text" id="price" placeholder="Price" value="${oldProduct.price}">
+    <input type="number" id="price" placeholder="Price" value="${oldProduct.price}">
     <input type="file" id="image" accept="image/*">
     <img id="imagePreview" src="${oldProduct.image}" alt="Preview" style="max-width: 60px">
     <button onclick="update(${index})">Update</button>
@@ -116,11 +123,17 @@ function update(index) {
     let color = document.getElementById("color").value;
     let price = document.getElementById("price").value;
     let imageInput = document.getElementById("image");
-    let image = imageInput.files.length > 0 ? URL.createObjectURL(imageInput.files[0]) : "";
+    let image = imageInput.files.length > 0 ? URL.createObjectURL(imageInput.files[0]) : currentImage;
+    // Kiểm tra đầy đủ thông tin
     if (name.trim() === '' || color.trim() === '' || price.trim() === '') {
-        // Hiển thị thông báo nếu người dùng chưa nhập đủ thông tin
         alert("Vui lòng nhập đầy đủ thông tin sản phẩm!");
-        return; // Dừng việc cập nhật sản phẩm nếu thông tin không đầy đủ
+        return;
+    }
+
+    // Kiểm tra giá trị price không âm
+    if (isNaN(price) || Number(price) < 0) {
+        alert("Giá sản phẩm phải là số không âm!");
+        return;
     }
     let newProduct = new Product(id, name, color, price, image);
     myStore.update(index, newProduct);
@@ -168,6 +181,7 @@ function search() {
         alert("Không tìm thấy " + nameSearch);
     }
 }
+
 let isSortedByNameAsc = false;
 function sortByName() {
     if (isSortedByNameAsc) {
